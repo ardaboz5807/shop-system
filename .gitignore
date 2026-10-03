@@ -1,11 +1,11 @@
-# Maven Build
-target/
-
 # IntelliJ IDEA
 .idea/
 *.iml
 *.iws
 *.ipr
+
+# Maven
+target/
 
 # Java
 *.class
@@ -13,12 +13,12 @@ target/
 # Logs
 *.log
 
-# SQLite Datenbanken
+# SQLite
 *.db
 *.db-journal
 *.sqlite
 *.sqlite3
 
-# Betriebssystem
+# OS
 .DS_Store
 Thumbs.db
