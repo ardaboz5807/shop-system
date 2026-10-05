@@ -10,8 +10,13 @@ public class Database {
 
     //Erstellt die drei Tabellen, nötig für den Shop
     public void createTables(){
+        //Tabelle für die Produkte
         String sqlProducts = "CREATE TABLE IF NOT EXISTS products (id integer PRIMARY KEY, name text, price real, stock integer)";
+
+        //Tabelle speichert die Bestellungen als Ganzes
         String sqlOrders = "CREATE TABLE IF NOT EXISTS orders (id integer PRIMARY KEY, total_price real, status text, order_date text)";
+
+        //Tabelle speichert, welche Produkte genau in dieser Bestellung enthalten sind
         String sqlOrderItems = "CREATE TABLE IF NOT EXISTS order_items (id integer PRIMARY KEY, order_id integer, product_id integer, quantity integer, price real)";
         String[] tables = {sqlProducts,sqlOrders,sqlOrderItems};
         try(Connection conn = DriverManager.getConnection(url);
@@ -63,8 +68,9 @@ public class Database {
         catch(Exception e){
             e.printStackTrace();
             System.out.println("Fehler beim Aufrufen eines Produkts");
+            return null;
         }
-        return null;
+
 
     }
 
@@ -106,6 +112,22 @@ public class Database {
         catch(Exception e){
             e.printStackTrace();
             System.out.println("Fehler beim Printen der Tabelle");
+        }
+    }
+
+    public boolean deleteFromProducts(int id){
+        String sql = "DELETE FROM products WHERE id = ?";
+        try(Connection conn = DriverManager.getConnection(url);
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+
+            stmt.setInt(1,id);
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return false;
         }
     }
 

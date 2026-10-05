@@ -1,3 +1,3 @@
-1. AdminArea beenden
-    -> 3. Produkt löschen
-    -> AdminArea verschönern (souts)
+Shopping card beenden
+    -> neue Klasse für items in shopping card erstellen CartItem mit id,name,amount,price
+    -> anschließend in ArrayList packen mit ArrayList<CartItem>

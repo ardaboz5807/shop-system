@@ -29,7 +29,7 @@ public class Homepage {
             scanner.nextLine();
             switch(choice){
                 case 1:
-                    System.out.println("Eins");
+                    dtb.getAllProductsFromProducts();
                     break;
                 case 2:
                     System.out.println("Zwei");
