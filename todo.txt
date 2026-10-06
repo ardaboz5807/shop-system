@@ -1,3 +1,4 @@
 Shopping card beenden
-    -> neue Klasse für items in shopping card erstellen CartItem mit id,name,amount,price
-    -> anschließend in ArrayList packen mit ArrayList<CartItem>
+    -> Funktion 3 beenden (seeInside()), alle interne Funktionen
+    -> Datenbank(sqlOrders) mitintegrieren für Funktion 2 und Funktion 3
+    -> Produkte stock updaten beim jeden hinzufügen der Produkte in den Warenkorb

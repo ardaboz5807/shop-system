@@ -14,7 +14,7 @@ public class Database {
         String sqlProducts = "CREATE TABLE IF NOT EXISTS products (id integer PRIMARY KEY, name text, price real, stock integer)";
 
         //Tabelle speichert die Bestellungen als Ganzes
-        String sqlOrders = "CREATE TABLE IF NOT EXISTS orders (id integer PRIMARY KEY, total_price real, status text, order_date text)";
+        String sqlOrders = "CREATE TABLE IF NOT EXISTS orders (id integer PRIMARY KEY, name text, price real, amount integer)";
 
         //Tabelle speichert, welche Produkte genau in dieser Bestellung enthalten sind
         String sqlOrderItems = "CREATE TABLE IF NOT EXISTS order_items (id integer PRIMARY KEY, order_id integer, product_id integer, quantity integer, price real)";

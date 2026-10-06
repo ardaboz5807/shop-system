@@ -1,12 +1,16 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Homepage {
 
+    Scanner scanner = new Scanner(System.in); //Der scanner
+    ArrayList<Product> sc = new ArrayList<>();   //Die Liste, wo die Produkte im Warenkorb angezeigt werden
+                                                  //Die Produkte werden als CartItem gespeichert
     //Externe Klassen
-    Scanner scanner = new Scanner(System.in);
     Database dtb = new Database();
 
     //Shop System Klassen
+    ShoppingCard shoppingCard = new ShoppingCard(sc,scanner,dtb);
     AdminArea adminArea = new AdminArea(scanner,dtb);
 
     public void start(){
@@ -32,10 +36,10 @@ public class Homepage {
                     dtb.getAllProductsFromProducts();
                     break;
                 case 2:
-                    System.out.println("Zwei");
+                    shoppingCard.putInside();
                     break;
                 case 3:
-                    System.out.println("Drei");
+                    shoppingCard.seeInside();
                     break;
                 case 4:
                     System.out.println("Vier");

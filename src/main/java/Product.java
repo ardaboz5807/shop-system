@@ -12,4 +12,8 @@ public class Product {
         this.price = price;
         this.stock = stock;
     }
+
+    public double getTotalPrice(){
+        return price*stock;
+    }
 }
