@@ -11,6 +11,7 @@ public class Homepage {
 
     //Shop System Klassen
     ShoppingCard shoppingCard = new ShoppingCard(sc,scanner,dtb);
+    OrderOrderItems orderOrderItems = new OrderOrderItems(scanner,dtb);
     AdminArea adminArea = new AdminArea(scanner,dtb);
 
     public void start(){
@@ -42,10 +43,10 @@ public class Homepage {
                     shoppingCard.seeInside();
                     break;
                 case 4:
-                    System.out.println("Vier");
+                    shoppingCard.finishBuying();
                     break;
                 case 5:
-                    System.out.println("Fünf");
+                    orderOrderItems.start();
                     break;
                 case 6:
                     System.out.println("Sechs");

@@ -1,4 +1,3 @@
 Shopping card beenden
-    -> Funktion 3 beenden (seeInside()), alle interne Funktionen
-    -> Datenbank(sqlOrders) mitintegrieren für Funktion 2 und Funktion 3
-    -> Produkte stock updaten beim jeden hinzufügen der Produkte in den Warenkorb
+    -> Funktion 5, Bestellungen anzeigen in Detail
+    -> OrderOrderItems.java updaten
