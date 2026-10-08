@@ -2,21 +2,23 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.time.LocalDate;
 
+// Verwaltet den Warenkorb und den Abschluss von Bestellungen
 public class ShoppingCard {
-    ArrayList<Product> sc;  //The ShoppingCard List
+    ArrayList<Product> sc;  // Enthält alle aktuell in den Warenkorb gelegten Produkte
     Scanner scanner;
     Database dtb;
 
-    //Externe Variable
+    // Aktuelles Datum für neu erstellte Bestellungen
     String today = LocalDate.now().toString();
 
+    // Verwendet den gemeinsamen Warenkorb, Scanner und die Datenbank
     public ShoppingCard(ArrayList<Product> sc, Scanner scanner, Database dtb){
         this.sc = sc;
         this.scanner = scanner;
         this.dtb = dtb;
     }
 
-    //Homepage Funktion 2
+    // Fügt ein Produkt mit der gewünschten Menge zum Warenkorb hinzu
     public void putInside(){
         while(true){
             System.out.println(">> Produkt-ID eingeben:");
@@ -30,9 +32,9 @@ public class ShoppingCard {
                 System.out.println("[FEHLER] Produkt wurde nicht gefunden!");
             }
             else{
-                System.out.println("========================================");
-                System.out.println("            PRODUKT AUSGEWÄHLT           ");
-                System.out.println("========================================");
+                System.out.println("========================================================================");
+                System.out.println("                           PRODUKT AUSGEWÄHLT                           ");
+                System.out.println("========================================================================");
                 System.out.println();
                 System.out.println("Produkt:");
                 System.out.println(product.name);
@@ -46,12 +48,16 @@ public class ShoppingCard {
                 System.out.println(">> Gewünschte Menge:");
                 int amount = scanner.nextInt();
                 scanner.nextLine();
+
+                // Die Menge darf weder den Lagerbestand überschreiten noch kleiner als 1 sein
                 if(amount > product.stock || amount <= 0) {
                     System.out.println("[FEHLER] Gewünschte Menge ist nicht verfügbar!");
-                    System.out.println("Vorgang abgebrochen...");
+                    System.out.println("[INFO] Vorgang abgebrochen.");
                 }
                 else{
                     System.out.println("[OK] " + amount + "x " + product.name + " wurde zum Warenkorb hinzugefügt!");
+
+                    // Im Warenkorb repräsentiert stock die ausgewählte Menge
                     Product ci = new Product(product.id, product.name, product.price, amount);
                     sc.add(ci);
                 }
@@ -66,12 +72,12 @@ public class ShoppingCard {
             if (choice == 1) {
                 continue;
             }
-            System.out.println(">> Zurück zum Hauptmenü...");
+            System.out.println("[INFO] Zurück zum Hauptmenü...");
             return;
         }
     }
 
-    //Funktion 3
+    // Zeigt den Warenkorb und die verfügbaren Warenkorb-Funktionen an
     public void seeInside(){
         while(true){
             double totalPrice = 0;
@@ -87,6 +93,8 @@ public class ShoppingCard {
                     "Gesamt"
             );
             System.out.println("------------------------------------------------------------------------");
+
+            // Berechnet und zeigt den Gesamtpreis jeder Warenkorbposition
             for(Product cartItem : sc){
                 totalPrice += cartItem.getTotalPrice();
                 System.out.printf("%-4d %-28s %8d %10.2f € %12.2f €%n",
@@ -129,14 +137,15 @@ public class ShoppingCard {
         }
     }
 
-    //Funktion 3.1
+    // Entfernt ein Produkt anhand seiner ID aus dem Warenkorb
     public void removeProduct(){
-        System.out.println("========================================");
-        System.out.println("           PRODUKT ENTFERNEN             ");
-        System.out.println("========================================");
+        System.out.println("========================================================================");
+        System.out.println("                           PRODUKT ENTFERNEN                            ");
+        System.out.println("========================================================================");
         System.out.println(">> Produkt-ID eingeben:");
         int id = scanner.nextInt();
         scanner.nextLine();
+
         for(int i = 0; i<sc.size(); i++){
             if(sc.get(i).id == id){
                 System.out.println("[OK] Produkt erfolgreich aus dem Warenkorb entfernt!");
@@ -147,23 +156,27 @@ public class ShoppingCard {
         System.out.println("[FEHLER] Produkt wurde im Warenkorb nicht gefunden!");
     }
 
-    //Funktion 3.2
+    // Ändert die gewünschte Menge eines Produkts im Warenkorb
     public void changeProductAmount(){
-        System.out.println("========================================");
-        System.out.println("             MENGE ÄNDERN                ");
-        System.out.println("========================================");
+        System.out.println("========================================================================");
+        System.out.println("                              MENGE ÄNDERN                              ");
+        System.out.println("========================================================================");
         System.out.println(">> Produkt-ID eingeben:");
         int id = scanner.nextInt();
         scanner.nextLine();
+
         for(Product product : sc){
             if(product.id == id){
+
+                // Der aktuelle Lagerbestand wird erneut aus der Datenbank abgerufen
                 Product dtbproduct = dtb.getProductFromProducts(id);
                 System.out.println(">> Neue Menge eingeben:");
                 int amount = scanner.nextInt();
                 scanner.nextLine();
+
                 if(amount > dtbproduct.stock || amount <= 0){
                     System.out.println("[FEHLER] Gewünschte Menge ist nicht verfügbar!");
-                    System.out.println("Vorgang abgebrochen...");
+                    System.out.println("[INFO] Vorgang abgebrochen.");
                     return;
                 }
                 else{
@@ -175,7 +188,7 @@ public class ShoppingCard {
         System.out.println("[FEHLER] Produkt wurde im Warenkorb nicht gefunden!");
     }
 
-    //Funktion 3.3 und Homepage 3
+    // Erstellt aus dem aktuellen Warenkorb eine Bestellung
     public void finishBuying(){
         System.out.println("========================================================================");
         System.out.println("                        BESTELLUNG ABSCHLIESSEN                         ");
@@ -188,6 +201,8 @@ public class ShoppingCard {
                 "Gesamt"
         );
         System.out.println("--------------------------------------------------------");
+
+        // Berechnet den Gesamtpreis der Bestellung
         for(Product product : sc){
             total += product.getTotalPrice();
             System.out.printf("%-28s %10d %14.2f €%n",
@@ -213,27 +228,30 @@ public class ShoppingCard {
             switch(choice){
                 case 1:
                     System.out.println();
-                    System.out.println("Bestellung wird erstellt...");
-                    System.out.println("Produkte werden gespeichert...");
-                    System.out.println("Lagerbestand wird aktualisiert...");
+                    System.out.println("[INFO] Bestellung wird erstellt...");
+                    System.out.println("[INFO] Produkte werden gespeichert...");
+                    System.out.println("[INFO] Lagerbestand wird aktualisiert...");
 
-                    //Wird in die Datenbank hinzugefügt und gibt die ID zurück
+                    // Erstellt die Bestellung und speichert die generierte Bestell-ID
                     int orderId = dtb.insertIntoOrders(total, "ABGESCHLOSSEN", today);
                     if (orderId != -1) {
                         boolean successOrderItems = true;
+
+                        // Speichert jedes Produkt als einzelne Bestellposition
                         for (Product product : sc) {
                             boolean inserted = dtb.insertIntoOrderItems(orderId, product.id, product.stock, product.getTotalPrice());
                             if (!inserted) {
                                 successOrderItems = false;
                             }
                         }
+
                         if (successOrderItems) {
                             boolean allStocksUpdated = true;
 
+                            // Zieht die bestellte Menge vom aktuellen Lagerbestand ab
                             for (Product productInSc : sc) {
                                 Product tmp = dtb.getProductFromProducts(productInSc.id);
 
-                                // Prüfen, ob Produkt existiert und der Bestand ausreicht (nochmal zu Sicherheit)
                                 if (tmp != null) {
                                     int newStock = tmp.stock - productInSc.stock;
                                     boolean updated = dtb.updateStock(productInSc.id, newStock);
@@ -248,10 +266,12 @@ public class ShoppingCard {
 
                             if (allStocksUpdated) {
                                 System.out.println();
-                                System.out.println("========================================");
+                                System.out.println("========================================================================");
                                 System.out.println("[OK] Bestellung erfolgreich gespeichert!");
-                                System.out.println("========================================");
-                                sc.clear(); // Warenkorb nach erfolgreicher Bestellung leeren
+                                System.out.println("========================================================================");
+
+                                // Warenkorb wird erst nach einer erfolgreichen Bestellung geleert
+                                sc.clear();
                             }
                             else {
                                 System.out.println("[FEHLER] Mindestens ein Lagerbestand konnte nicht aktualisiert werden.");

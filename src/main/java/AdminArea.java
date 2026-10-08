@@ -1,19 +1,22 @@
 import java.util.Scanner;
 
+// Verwaltet administrative Funktionen für Produkte
 public class AdminArea {
     Scanner scanner;
     Database dtb;
 
+    // Verwendet den gemeinsamen Scanner und die bestehende Datenbankinstanz
     public AdminArea(Scanner scanner, Database dtb){
         this.scanner = scanner;
         this.dtb = dtb;
     }
 
+    // Startet das Admin-Menü
     public void start(){
         while(true){
-            System.out.println("========================================");
-            System.out.println("              ADMIN-BEREICH             ");
-            System.out.println("========================================");
+            System.out.println("========================================================================");
+            System.out.println("                             ADMIN-BEREICH                              ");
+            System.out.println("========================================================================");
             System.out.println("[1] Produkt hinzufügen");
             System.out.println("[2] Produkt bearbeiten");
             System.out.println("[3] Produkt löschen");
@@ -23,7 +26,7 @@ public class AdminArea {
             System.out.println();
             System.out.println(">> Auswahl:");
             int choice = scanner.nextInt();
-            scanner.nextLine(); //Enter entfernen
+            scanner.nextLine(); // Entfernt den verbleibenden Zeilenumbruch
             switch(choice){
                 case 1:
                     add();
@@ -43,6 +46,7 @@ public class AdminArea {
         }
     }
 
+    // Liest die Produktdaten ein und fügt ein neues Produkt zur Datenbank hinzu
     public void add(){
         System.out.println(">> Produktname: ");
         String name = scanner.nextLine();
@@ -58,17 +62,18 @@ public class AdminArea {
         dtb.addProducts(name, price, stock);
     }
 
+    // Bearbeitet Name, Preis oder Bestand eines vorhandenen Produkts
     public void edit(){
-        System.out.println("========================================");
-        System.out.println("           PRODUKT BEARBEITEN            ");
+        System.out.println("========================================================================");
+        System.out.println("                           PRODUKT BEARBEITEN                           ");
         System.out.println(">> Bitte Produkt-ID eingeben:");
 
         int id = scanner.nextInt();
-        scanner.nextLine(); //Enter entfernen
+        scanner.nextLine(); // Entfernt den verbleibenden Zeilenumbruch
 
         Product product = dtb.getProductFromProducts(id);
 
-        //Kontrollieren, ob so ein Produkt überhaupt existiert
+        // Bearbeitung wird abgebrochen, wenn die angegebene ID nicht existiert
         if (product == null) {
             System.out.println("[FEHLER] Produkt mit der ID " + id + " wurde nicht gefunden!");
             return;
@@ -113,9 +118,10 @@ public class AdminArea {
         }
     }
 
+    // Löscht ein Produkt anhand seiner ID
     public void delete(){
-        System.out.println("========================================");
-        System.out.println("            PRODUKT LOESCHEN             ");
+        System.out.println("========================================================================");
+        System.out.println("                            PRODUKT LÖSCHEN                             ");
         System.out.println(">> Bitte Produkt-ID eingeben:");
 
         int id = scanner.nextInt();
@@ -124,10 +130,10 @@ public class AdminArea {
         boolean deleted = dtb.deleteFromProducts(id);
 
         if(deleted){
-            System.out.println("[OK] Produkt erfolgreich geloescht!");
+            System.out.println("[OK] Produkt erfolgreich gelöscht!");
         }
         else{
-            System.out.println("[FEHLER] Produkt wurde nicht gefunden.");
+            System.out.println("[FEHLER] Produkt wurde nicht gefunden!");
         }
 
     }

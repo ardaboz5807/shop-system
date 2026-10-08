@@ -1,43 +1,45 @@
 import java.sql.*;
 
+// Verwaltet sämtliche Zugriffe auf die SQLite-Datenbank
 public class Database {
 
     public static String url = "jdbc:sqlite:identifier.sqlite.db";
 
+    // Erstellt beim Start die benötigten Tabellen, falls sie noch nicht existieren
     public Database() {
         createTables();
     }
 
-    //Erstellt die drei Tabellen, nötig für den Shop
+    // Erstellt die Tabellen für Produkte, Bestellungen und Bestellpositionen
     public void createTables() {
-        //Tabelle für die Produkte
         String sqlProducts = "CREATE TABLE IF NOT EXISTS products (id integer PRIMARY KEY, name text, price real, stock integer)";
 
-        //Extra Tabelle für die Bestellungen
         String sqlOrders = "CREATE TABLE IF NOT EXISTS orders (id INTEGER PRIMARY KEY AUTOINCREMENT, total_price real, status text, order_date text)";
 
-        //Tabelle speichert, welche Produkte genau in dieser Bestellung enthalten sind
         String sqlOrderItems = "CREATE TABLE IF NOT EXISTS order_items (id integer PRIMARY KEY, order_id integer, product_id integer, quantity integer, price real)";
         String[] tables = {sqlProducts, sqlOrders, sqlOrderItems};
+
         try (Connection conn = DriverManager.getConnection(url);
              Statement stmt = conn.createStatement()) {
 
+            // Führt alle CREATE-TABLE-Anweisungen nacheinander aus
             for (String sql : tables) {
                 stmt.execute(sql);
             }
-            System.out.println("Datenbank erfolgreich geladen!");
+            System.out.println("[OK] Datenbank erfolgreich geladen!");
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Fehler beim Laden der Tabellen");
+            System.out.println("[FEHLER] Datenbank konnte nicht geladen werden!");
         }
     }
 
     //----------------------------------------------------------//
-    //Operationen für sqlProducts
+    // Produkt-Operationen
 
-    //Fügt ein Produkt in die Tabelle products hinzu
+    // Fügt ein neues Produkt zur Tabelle products hinzu
     public void addProducts(String name, double price, int stock) {
         String sql = "INSERT INTO products (name,price,stock) VALUES (?,?,?)";
+
         try (Connection conn = DriverManager.getConnection(url);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -48,51 +50,58 @@ public class Database {
 
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Fehler beim Hinzufügen der Produkte");
+            System.out.println("[FEHLER] Produkt konnte nicht hinzugefügt werden!");
         }
     }
 
-    //Bekommt ein Product aus der Tabelle products anhand der ID zurück
+    // Gibt ein Produkt anhand seiner ID zurück
     public Product getProductFromProducts(int id) {
         String sql = "SELECT * FROM products WHERE id = ?";
+
         try (Connection conn = DriverManager.getConnection(url);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             Product product = null;
+
             if (rs.next()) {
                 product = new Product(id, rs.getString("name"), rs.getDouble("price"), rs.getInt("stock"));
             }
             return product;
+
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Fehler beim Aufrufen eines Produkts");
+            System.out.println("[FEHLER] Produkt konnte nicht abgerufen werden!");
             return null;
         }
     }
 
+    // Aktualisiert den Lagerbestand eines Produkts
     public boolean updateStock(int id, int stock){
         String sql = "UPDATE products SET stock = ? WHERE id = ?";
+
         try(Connection conn = DriverManager.getConnection(url);
             PreparedStatement stmt = conn.prepareStatement(sql)){
 
             stmt.setInt(1,stock);
             stmt.setInt(2,id);
             int affected = stmt.executeUpdate();
+
             return affected >= 1;
 
         }
         catch(SQLException e){
             e.printStackTrace();
-            System.out.println("Fehler beim updaten vom lager");
+            System.out.println("[FEHLER] Lagerbestand konnte nicht aktualisiert werden!");
             return false;
         }
     }
 
-    //Updatet ein Produkt aus der Tabelle products anhand der ID. Mithilfe der Klasse Product ist es einfacher zu updaten
+    // Aktualisiert Name, Preis und Bestand eines Produkts anhand seiner ID
     public void editProducts(int id, String name, double price, int stock) {
         String sql = "UPDATE products SET name = ?, price = ?, stock = ? WHERE id = ?";
+
         try (Connection conn = DriverManager.getConnection(url);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -104,39 +113,43 @@ public class Database {
 
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Fehler beim Editieren eines Products");
+            System.out.println("[FEHLER] Produkt konnte nicht bearbeitet werden!");
         }
     }
 
-    //Printet alle Produkte aus products
+    // Gibt alle gespeicherten Produkte in der Konsole aus
     public void getAllProductsFromProducts() {
         String sql = "SELECT * FROM products";
+
         try (Connection conn = DriverManager.getConnection(url);
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
+
             while (rs.next()) {
                 System.out.println(
                         "ID: " + rs.getInt("id")
-                                + " | Name: " + rs.getString("name")
+                                + " | Produkt: " + rs.getString("name")
                                 + " | Preis: " + rs.getDouble("price") + " €"
-                                + " | Im Lager: " + rs.getInt("stock")
+                                + " | Bestand: " + rs.getInt("stock")
                 );
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Fehler beim Printen der Tabelle");
+            System.out.println("[FEHLER] Produkte konnten nicht angezeigt werden!");
         }
     }
 
-    //Aus Tabelle Products löschen
+    // Löscht ein Produkt anhand seiner ID
     public boolean deleteFromProducts(int id) {
         String sql = "DELETE FROM products WHERE id = ?";
+
         try (Connection conn = DriverManager.getConnection(url);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
             int affectedRows = stmt.executeUpdate();
+
             return affectedRows > 0;
 
         } catch (Exception e) {
@@ -145,9 +158,10 @@ public class Database {
         }
     }
 
-    //Alles löschen
+    // Löscht alle Produkte aus der Tabelle products
     public void deleteEverythingFromProducts() {
         String sql = "DELETE FROM products";
+
         try (Connection connn = DriverManager.getConnection(url);
              Statement stmt = connn.createStatement()) {
 
@@ -160,10 +174,12 @@ public class Database {
 
 
     //----------------------------------------------------------//
-    //Operationen für sqlOrders
+    // Bestell-Operationen
 
+    // Erstellt eine neue Bestellung und gibt deren generierte ID zurück
     public int insertIntoOrders(double total_price, String status, String order_date) {
         String sql = "INSERT INTO orders (total_price,status,order_date) VALUES (?,?,?)";
+
         try (Connection conn = DriverManager.getConnection(url);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -172,32 +188,33 @@ public class Database {
             stmt.setString(3, order_date);
             stmt.execute();
 
-            //Generierte ID abrufen
+            // Liest die automatisch generierte Bestell-ID aus
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    return generatedKeys.getInt(1); // Gibt die generierte order_id zurück
+                    return generatedKeys.getInt(1);
                 }
             }
         }
         catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("Fehler beim inserten in Orders");
+            System.out.println("[FEHLER] Bestellung konnte nicht gespeichert werden!");
 
         }
         return -1;
     }
 
-    //Printet alle Orders
+    // Gibt alle gespeicherten Bestellungen in Tabellenform aus
     public void printAllOrders(){
         String sql = "SELECT * FROM orders";
+
         try(Connection conn = DriverManager.getConnection(url);
             Statement stmt = conn.createStatement()){
 
             ResultSet rs = stmt.executeQuery(sql);
 
-            System.out.println("===============================================================");
-            System.out.println("                        BESTELLUNGEN                           ");
-            System.out.println("===============================================================");
+            System.out.println("========================================================================");
+            System.out.println("                              BESTELLUNGEN                              ");
+            System.out.println("========================================================================");
             System.out.println();
 
             System.out.printf("%-10s %14s     %-20s %-15s%n",
@@ -207,7 +224,7 @@ public class Database {
                     "Datum"
             );
 
-            System.out.println("---------------------------------------------------------------");
+            System.out.println("------------------------------------------------------------------------");
 
             while (rs.next()) {
                 System.out.printf("%-10d %12.2f €     %-20s %-15s%n",
@@ -218,7 +235,7 @@ public class Database {
                 );
             }
 
-            System.out.println("---------------------------------------------------------------");
+            System.out.println("------------------------------------------------------------------------");
 
         }
         catch(SQLException e){
@@ -227,9 +244,10 @@ public class Database {
         }
     }
 
-    //Alles löschen
+    // Löscht alle gespeicherten Bestellungen
     public void deleteEverythingFromOrders(){
         String sql = "DELETE FROM orders";
+
         try(Connection connn = DriverManager.getConnection(url);
             Statement stmt = connn.createStatement()){
 
@@ -242,10 +260,12 @@ public class Database {
     }
 
     //----------------------------------------------------------//
-    //Operationen für sqlOrder_Items
+    // Bestellpositions-Operationen
 
+    // Speichert ein Produkt als Position innerhalb einer Bestellung
     public boolean insertIntoOrderItems(int order_id, int product_id, int quantity, double price){
         String sql = "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?,?,?,?) ";
+
         try(Connection conn = DriverManager.getConnection(url);
             PreparedStatement stmt = conn.prepareStatement(sql)){
 
@@ -254,14 +274,58 @@ public class Database {
             stmt.setInt(3,quantity);
             stmt.setDouble(4,price);
             stmt.execute();
+
             return true;
 
         }
         catch(SQLException e){
             e.printStackTrace();
-            System.out.println("Fehler beim inserten bei orderitems");
+            System.out.println("[FEHLER] Bestellposition konnte nicht gespeichert werden!");
             return false;
         }
     }
 
+    // Ruft alle Bestellpositionen einer bestimmten Bestellung ab
+    public boolean getOrder(int id) {
+        String sql = "SELECT * FROM order_items WHERE order_id = ?";
+        boolean found = false;
+
+        try (Connection conn = DriverManager.getConnection(url);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+
+                    // Überschrift wird nur einmal ausgegeben, sobald ein Eintrag gefunden wurde
+                    if (!found) {
+                        System.out.println("------------------------------------------------------------------------");
+                        System.out.println("BESTELLDETAILS | Bestellnummer: " + id);
+                        System.out.println("------------------------------------------------------------------------");
+                        found = true;
+                    }
+
+                    int itemId = rs.getInt("id");
+                    int productId = rs.getInt("product_id");
+                    int quantity = rs.getInt("quantity");
+                    double price = rs.getDouble("price");
+
+                    System.out.printf("Position: %-5d | Produkt-ID: %-5d | Menge: %-5d | Preis: %.2f €%n",
+                            itemId, productId, quantity, price);
+                }
+
+                if (found){
+                    System.out.println("------------------------------------------------------------------------");
+                }
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("[FEHLER] Bestelldetails konnten nicht abgerufen werden!");
+        }
+
+        // true bedeutet, dass mindestens eine Bestellposition gefunden wurde
+        return found;
+    }
 }
